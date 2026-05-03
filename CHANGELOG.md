@@ -3,6 +3,11 @@
 All notable changes to PlaceResourceMod are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.2] - 2026-05-03
+
+### Added
+- Bundled `thumbnail.png` so the mod displays an icon in COI's mod list.
+
 ## [0.3.1] - 2026-05-03
 
 ### Added

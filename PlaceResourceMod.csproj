@@ -7,7 +7,7 @@
 		<LangVersion>latest</LangVersion>
 
 		<!-- Bump these in lockstep with manifest.json's "version" field. -->
-		<Version>0.3.1</Version>
+		<Version>0.3.2</Version>
 		<AssemblyTitle>Place Virtual Resource</AssemblyTitle>
 		<Product>Place Virtual Resource</Product>
 		<Company>Everyone</Company>
@@ -102,6 +102,7 @@
 	<Target Name="DeployToModsFolder" AfterTargets="PostBuildEvent" Condition="'$(DeployToModsFolder)' == 'true' AND '$(ProjectDir)' != '*Undefined*'">
 		<Copy SourceFiles="$(ProjectDir)manifest.json" DestinationFolder="$(COI_MODS)\$(TargetName)\" />
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(COI_MODS)\$(TargetName)\" />
+		<Copy SourceFiles="$(ProjectDir)thumbnail.png" DestinationFolder="$(COI_MODS)\$(TargetName)\" Condition="Exists('$(ProjectDir)thumbnail.png')" />
 		<Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(COI_MODS)\$(TargetName)\" Condition="'$(Configuration)' == 'Debug'" />
 	</Target>
 
@@ -116,6 +117,7 @@
 		<MakeDir Directories="$(StageDir)" />
 		<Copy SourceFiles="$(ProjectDir)manifest.json" DestinationFolder="$(StageDir)" />
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(StageDir)" />
+		<Copy SourceFiles="$(ProjectDir)thumbnail.png" DestinationFolder="$(StageDir)" Condition="Exists('$(ProjectDir)thumbnail.png')" />
 	</Target>
 
 	<Target Name="ZipRelease" AfterTargets="StageReleaseFiles" Condition="'$(Configuration)' == 'Release'">
