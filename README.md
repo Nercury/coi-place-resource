@@ -52,6 +52,32 @@ dotnet build -c Release
 
 Built and tested against `net48`. The csproj sets `<Private>false</Private>` on every game/Unity reference, so `bin/Release/net48/` only contains your own DLL.
 
+## Releasing
+
+The repo ships a PowerShell release script. Anyone with the prerequisites listed below can cut a release end to end.
+
+Prerequisites:
+- Captain of Industry installed, `COI_ROOT` environment variable set.
+- .NET SDK 8 or newer.
+- PowerShell 7+ (`pwsh`).
+- GitHub CLI installed (`winget install GitHub.cli`) and authenticated (`gh auth login`).
+- Push access to the `main` branch on `origin`.
+
+To cut a release:
+1. Bump `version` in `manifest.json` and `<Version>` in `PlaceResourceMod.csproj`. They must match.
+2. Add a `## [x.y.z] - YYYY-MM-DD` section to `CHANGELOG.md` describing the changes.
+3. Commit and push to `main`.
+4. From the repo root, run:
+   ```powershell
+   ./release.ps1
+   ```
+
+The script verifies the working tree, builds the mod, packages a zip at `bin/Release/net48/PlaceResourceMod-x.y.z.zip`, creates and pushes the `vx.y.z` tag, and creates the public GitHub release with the zip attached and the CHANGELOG section as the release notes.
+
+Use `./release.ps1 -DryRun` to print every step without changing anything.
+
+If a step fails, the script exits with a clear message before any tag or release is created.
+
 ## License
 
 MIT, see [LICENSE](LICENSE).

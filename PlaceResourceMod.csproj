@@ -104,4 +104,26 @@
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(COI_MODS)\$(TargetName)\" />
 		<Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(COI_MODS)\$(TargetName)\" Condition="'$(Configuration)' == 'Debug'" />
 	</Target>
+
+	<!-- Release-only: stage manifest+DLL into stage/PlaceResourceMod/ then zip stage/ so the zip's
+	     root contains the PlaceResourceMod/ folder (players extract into Mods/ to get Mods/PlaceResourceMod/...). -->
+	<Target Name="StageReleaseFiles" AfterTargets="DeployToModsFolder" Condition="'$(Configuration)' == 'Release'">
+		<PropertyGroup>
+			<StageRoot>$(TargetDir)stage\</StageRoot>
+			<StageDir>$(StageRoot)$(TargetName)\</StageDir>
+		</PropertyGroup>
+		<RemoveDir Directories="$(StageRoot)" />
+		<MakeDir Directories="$(StageDir)" />
+		<Copy SourceFiles="$(ProjectDir)manifest.json" DestinationFolder="$(StageDir)" />
+		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(StageDir)" />
+	</Target>
+
+	<Target Name="ZipRelease" AfterTargets="StageReleaseFiles" Condition="'$(Configuration)' == 'Release'">
+		<PropertyGroup>
+			<ZipPath>$(TargetDir)$(TargetName)-$(Version).zip</ZipPath>
+		</PropertyGroup>
+		<Delete Files="$(ZipPath)" />
+		<ZipDirectory SourceDirectory="$(StageRoot)" DestinationFile="$(ZipPath)" />
+		<Message Text="Release zip: $(ZipPath)" Importance="high" />
+	</Target>
 </Project>
