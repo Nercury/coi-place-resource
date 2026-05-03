@@ -4,7 +4,7 @@ A Captain of Industry mod that adds two map-design cheats usable in any game wit
 
 ![Place / Fulfill picker panel](thumbnail.png)
 
-Click the <img src="docs/toolbar-icon-display.svg" alt="Place / Fulfill icon" width="22"> button in the top toolbar (in the tool group, after Upgrade) to open the picker panel. **F9** is a keyboard shortcut for the same panel.
+Click the <img src="docs/toolbar-icon-display.svg" alt="Place / Fulfill icon" width="22"> button in the toolbar (in the tool group, after Upgrade) to open the picker panel. **F9** is a keyboard shortcut for the same panel.
 
 The panel has two action sections.
 

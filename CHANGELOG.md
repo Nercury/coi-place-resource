@@ -1,3 +1,6 @@
+v0.4.1 | 2026-05-04
+* Description fix: removed incorrect "top toolbar" wording.
+
 v0.4.0 | 2026-05-04
 * Toolbar button (in the tool group, after Upgrade) opens the picker panel. F9 still works as a keyboard shortcut.
 * Material picker stays interactive while the fulfill tool is active. Pick a different material and the next click uses the new selection without exiting the tool.
