@@ -6,6 +6,7 @@ Obj/
 UnityGenerated/
 LayoutsOutput/
 Library/
+Logs/
 Assets/AssetStoreTools*
 Assets/Sandbox*
 Assets/UnityVS/Editor/*
