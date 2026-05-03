@@ -2,6 +2,8 @@
 
 A Captain of Industry mod that adds two map-design cheats usable in any game without enabling sandbox mode (which is irreversible per playthrough).
 
+![Place / Fulfill picker panel, opened with F9](thumbnail.png)
+
 Press **F9** in-game to open a pinnable picker panel with two action sections.
 
 ## Place virtual resource
