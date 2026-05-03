@@ -1,6 +1,6 @@
 {
 	"id": "PlaceResourceMod",
-	"version": "0.3.2",
+	"version": "0.3.3",
 	"display_name": "Place Virtual Resource",
 	"description_short": "Press F9 to open the picker panel; place oil/water deposits or instantly fulfill terrain designations with chosen material, without sandbox mode.",
 	"description_long": "Map-design cheats usable in any game without enabling sandbox mode (which is irreversible).\n\nPress F9 to open a pinnable picker panel with two action sections.\n\nPlace virtual resource: click oil or groundwater to enter a modal placement mode. Shift+wheel changes radius, Ctrl+wheel changes quantity in 1k steps, Alt+wheel cycles resource (plain wheel still zooms the camera). Left-click places, right-click exits. Existing deposits are not modified.\n\nFulfill designations: pick any dumpable material (rocks, dirt, ore, sand), or leave empty for the designation's default, and click the Fulfill button. Then click+drag a rectangle on the terrain; every dumping, leveling, or mining designation whose center falls inside the rectangle is instantly realized using the selected material. Place the designators themselves with the game's normal toolbar tools first.",

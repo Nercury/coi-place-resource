@@ -7,7 +7,7 @@
 		<LangVersion>latest</LangVersion>
 
 		<!-- Bump these in lockstep with manifest.json's "version" field. -->
-		<Version>0.3.2</Version>
+		<Version>0.3.3</Version>
 		<AssemblyTitle>Place Virtual Resource</AssemblyTitle>
 		<Product>Place Virtual Resource</Product>
 		<Company>Everyone</Company>
@@ -118,6 +118,8 @@
 		<Copy SourceFiles="$(ProjectDir)manifest.json" DestinationFolder="$(StageDir)" />
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(StageDir)" />
 		<Copy SourceFiles="$(ProjectDir)thumbnail.png" DestinationFolder="$(StageDir)" Condition="Exists('$(ProjectDir)thumbnail.png')" />
+		<!-- Mod portal looks for changelog.txt next to manifest.json. Reuse our CHANGELOG.md content. -->
+		<Copy SourceFiles="$(ProjectDir)CHANGELOG.md" DestinationFiles="$(StageDir)changelog.txt" Condition="Exists('$(ProjectDir)CHANGELOG.md')" />
 	</Target>
 
 	<Target Name="ZipRelease" AfterTargets="StageReleaseFiles" Condition="'$(Configuration)' == 'Release'">

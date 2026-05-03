@@ -3,6 +3,11 @@
 All notable changes to PlaceResourceMod are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.3] - 2026-05-03
+
+### Added
+- Bundled `changelog.txt` (a copy of `CHANGELOG.md`) so the COI mod portal can display version history.
+
 ## [0.3.2] - 2026-05-03
 
 ### Added
