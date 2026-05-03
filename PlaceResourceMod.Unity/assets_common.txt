@@ -1,0 +1,2 @@
+placeresourcetoolbar
+    Assets/PlaceResourceMod/Toolbar.png

@@ -1,3 +1,4 @@
+using System;
 using Mafi;
 using Mafi.Core;
 using Mafi.Core.Input;
@@ -39,7 +40,9 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 	private readonly IInputScheduler m_inputScheduler;
 	private readonly AreaSelectionTool m_areaSelectionTool;
 
-	private Option<ProductProto> m_selectedProduct = Option<ProductProto>.None;
+	// Live getter back to the picker UI. Read at fulfill-time so the user can change material
+	// in the panel while the tool is active and the next click uses the new selection.
+	private Func<Option<ProductProto>> m_productGetter = () => Option<ProductProto>.None;
 
 	private GameObject m_panelGo;
 	private InfoPanelMb m_panel;
@@ -65,12 +68,12 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 	}
 
 	/// <summary>
-	/// Pre-select which product's terrain material is used when the dispatched fulfill cmd runs.
-	/// None → game uses default material (current behavior). Called by PlaceResourceWindow.
+	/// Source for the product's terrain material to use when the dispatched fulfill cmd runs.
+	/// Called once when the window activates this tool. The getter is invoked at every fulfill
+	/// click so changes via the picker panel while the tool is active take effect immediately.
 	/// </summary>
-	public void SetProduct(Option<ProductProto> product) {
-		m_selectedProduct = product;
-		updatePanelText();
+	public void SetProductGetter(Func<Option<ProductProto>> getter) {
+		m_productGetter = getter ?? (() => Option<ProductProto>.None);
 	}
 
 	public void Activate() {
@@ -79,17 +82,10 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 
 		m_panelGo = new GameObject("PlaceResourceMod.FulfillPanel");
 		m_panel = m_panelGo.AddComponent<InfoPanelMb>();
-		updatePanelText();
-	}
-
-	private void updatePanelText() {
-		if (m_panel == null) return;
-		string materialLine = m_selectedProduct.HasValue
-			? $"Material: {m_selectedProduct.Value.Strings.Name.TranslatedString}"
-			: "Material: any (designation default)";
+		// Material is intentionally not displayed here, it can be changed live via the picker
+		// panel and the cursor tooltip would only show a stale snapshot.
 		m_panel.SetLines(
 			"Quick fulfill designations",
-			materialLine,
 			"Click+drag to select area",
 			"Right-click to exit");
 	}
@@ -132,10 +128,12 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 	}
 
 	private void onSelectionDone(RectangleTerrainArea2i area, bool leftClick) {
-		// m_selectedProduct=None → terrain raises (or levels, or lowers) using whatever default
-		// material the designation already implies. With a product set, simUpdate uses that
-		// product's TerrainMaterial.SlimId (TerrainDesignationsManager.cs:703).
-		m_inputScheduler.ScheduleInputCmd(new QuickFulfillDesignationsCmd(area, m_selectedProduct));
+		// Read the currently-selected product from the picker UI at fulfill-time, not snapshot.
+		// None → terrain raises (or levels, or lowers) using whatever default material the
+		// designation already implies. With a product set, simUpdate uses that product's
+		// TerrainMaterial.SlimId (TerrainDesignationsManager.cs:703).
+		Option<ProductProto> product = m_productGetter();
+		m_inputScheduler.ScheduleInputCmd(new QuickFulfillDesignationsCmd(area, product));
 	}
 
 	private void onAreaToolDeactivated() {

@@ -2,9 +2,11 @@
 
 A Captain of Industry mod that adds two map-design cheats usable in any game without enabling sandbox mode (which is irreversible per playthrough).
 
-![Place / Fulfill picker panel, opened with F9](thumbnail.png)
+![Place / Fulfill picker panel](thumbnail.png)
 
-Press **F9** in-game to open a pinnable picker panel with two action sections.
+Click the <img src="docs/toolbar-icon-display.svg" alt="Place / Fulfill icon" width="22"> button in the top toolbar (in the tool group, after Upgrade) to open the picker panel. **F9** is a keyboard shortcut for the same panel.
+
+The panel has two action sections.
 
 ## Place virtual resource
 
@@ -25,7 +27,7 @@ The placement is surgical, only the new deposit is added; all existing deposits 
 
 ## Fulfill designations
 
-Use the game's normal toolbar tools (Dumping, Leveling, Mining, all available outside sandbox mode) to mark the terrain shape you want. Then in the F9 panel:
+Use the game's normal toolbar tools (Dumping, Leveling, Mining, all available outside sandbox mode) to mark the terrain shape you want. Then in the picker panel:
 
 1. Click the product icon in the "Fulfill designations" row to pick a material (rocks, dirt, ore, sand), or leave empty to use the designation's default material.
 2. Click the **Fulfill** button, you enter a modal area-select mode.
@@ -38,7 +40,7 @@ Use the game's normal toolbar tools (Dumping, Leveling, Mining, all available ou
 2. Extract the archive into `%APPDATA%\Captain of Industry\Mods\` so the path becomes `%APPDATA%\Captain of Industry\Mods\PlaceResourceMod\manifest.json`.
 3. Launch Captain of Industry.
 4. Enable "Place Virtual Resource" in the mod selector when starting a new game or loading a save.
-5. Press **F9** in-game.
+5. Click the toolbar button (in the tool group, after Upgrade) or press **F9**.
 
 ## Build from source
 

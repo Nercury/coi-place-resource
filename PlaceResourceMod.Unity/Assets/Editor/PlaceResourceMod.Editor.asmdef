@@ -1,0 +1,18 @@
+{
+    "name": "PlaceResourceMod.Editor",
+    "rootNamespace": "",
+    "references": [
+        "GUID:bac15ce870bc50e459c73967c94b7e59"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

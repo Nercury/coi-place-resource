@@ -5,3 +5,11 @@ obj/
 *.suo
 .idea/
 *.zip
+
+# Rust build artifacts (svg-rasterize tool)
+tools/*/target/
+tools/*/Cargo.lock
+
+# Local preview/diagnostic outputs (not shipped)
+toolbar-preview*.png
+diagnostic-*.png

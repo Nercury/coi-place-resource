@@ -89,13 +89,14 @@ if ($remoteTag) { Fail "Tag $tag already exists on origin." }
 Step 'Extracting release notes from CHANGELOG.md'
 if (-not (Test-Path 'CHANGELOG.md')) { Fail 'CHANGELOG.md not found.' }
 $changelog = Get-Content -Raw -Path 'CHANGELOG.md'
-$pattern = "(?ms)^## \[$([regex]::Escape($version))\][^\n]*\n(.*?)(?=^## |\z)"
+# Format per version: `vX.Y.Z | YYYY-MM-DD` header, then bullet lines, until the next `vX...` header or EOF.
+$pattern = "(?ms)^v$([regex]::Escape($version)) \|[^\n]*\n(.*?)(?=^v\d|\z)"
 $match = [regex]::Match($changelog, $pattern)
 if (-not $match.Success) {
-    Fail "No '## [$version]' section in CHANGELOG.md. Add one before releasing."
+    Fail "No 'v$version | ...' section in CHANGELOG.md. Add one before releasing."
 }
 $notes = $match.Groups[1].Value.Trim()
-if (-not $notes) { Fail "CHANGELOG.md section for $version is empty." }
+if (-not $notes) { Fail "CHANGELOG.md section for v$version is empty." }
 Write-Host "    notes preview:"
 $notes -split "`n" | Select-Object -First 6 | ForEach-Object { Write-Host "      $_" }
 

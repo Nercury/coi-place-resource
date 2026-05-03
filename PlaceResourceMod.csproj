@@ -7,13 +7,18 @@
 		<LangVersion>latest</LangVersion>
 
 		<!-- Bump these in lockstep with manifest.json's "version" field. -->
-		<Version>0.3.3</Version>
+		<Version>0.4.0</Version>
 		<AssemblyTitle>Place Virtual Resource</AssemblyTitle>
 		<Product>Place Virtual Resource</Product>
 		<Company>Everyone</Company>
 
 		<COI_MODS>$(APPDATA)\Captain of Industry\Mods</COI_MODS>
 		<DeployToModsFolder>true</DeployToModsFolder>
+
+		<!-- Exclude the Unity project folder and the Rust tools folder from dotnet's auto-include
+		     of **/*.cs (otherwise dotnet tries to compile every Unity Editor source file via the
+		     UnityRootSymlink and fails). -->
+		<DefaultItemExcludes>$(DefaultItemExcludes);PlaceResourceMod.Unity\**;tools\**;AssetBundles\**</DefaultItemExcludes>
 	</PropertyGroup>
 
 	<PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|AnyCPU'">
@@ -103,6 +108,10 @@
 		<Copy SourceFiles="$(ProjectDir)manifest.json" DestinationFolder="$(COI_MODS)\$(TargetName)\" />
 		<Copy SourceFiles="$(TargetPath)" DestinationFolder="$(COI_MODS)\$(TargetName)\" />
 		<Copy SourceFiles="$(ProjectDir)thumbnail.png" DestinationFolder="$(COI_MODS)\$(TargetName)\" Condition="Exists('$(ProjectDir)thumbnail.png')" />
+		<ItemGroup>
+			<_BundleFiles Include="$(ProjectDir)AssetBundles\*" Exclude="$(ProjectDir)AssetBundles\*.manifest;$(ProjectDir)AssetBundles\*.meta" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_BundleFiles)" DestinationFolder="$(COI_MODS)\$(TargetName)\AssetBundles\" Condition="'@(_BundleFiles)' != ''" />
 		<Copy SourceFiles="$(TargetDir)$(TargetName).pdb" DestinationFolder="$(COI_MODS)\$(TargetName)\" Condition="'$(Configuration)' == 'Debug'" />
 	</Target>
 
@@ -120,6 +129,11 @@
 		<Copy SourceFiles="$(ProjectDir)thumbnail.png" DestinationFolder="$(StageDir)" Condition="Exists('$(ProjectDir)thumbnail.png')" />
 		<!-- Mod portal looks for changelog.txt next to manifest.json. Reuse our CHANGELOG.md content. -->
 		<Copy SourceFiles="$(ProjectDir)CHANGELOG.md" DestinationFiles="$(StageDir)changelog.txt" Condition="Exists('$(ProjectDir)CHANGELOG.md')" />
+		<!-- Asset bundles, COI auto-loads them from {ModRoot}/AssetBundles/. -->
+		<ItemGroup>
+			<_StageBundleFiles Include="$(ProjectDir)AssetBundles\*" Exclude="$(ProjectDir)AssetBundles\*.manifest;$(ProjectDir)AssetBundles\*.meta" />
+		</ItemGroup>
+		<Copy SourceFiles="@(_StageBundleFiles)" DestinationFolder="$(StageDir)AssetBundles\" Condition="'@(_StageBundleFiles)' != ''" />
 	</Target>
 
 	<Target Name="ZipRelease" AfterTargets="StageReleaseFiles" Condition="'$(Configuration)' == 'Release'">

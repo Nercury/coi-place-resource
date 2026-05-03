@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using Mafi;
@@ -7,7 +8,9 @@ using Mafi.Localization;
 using Mafi.Unity;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.Ui;
+using Mafi.Unity.Ui.Hud;
 using Mafi.Unity.Ui.Library;
+using Mafi.Unity.UiStatic.Toolbar;
 using Mafi.Unity.UiToolkit.Component;
 using Mafi.Unity.UiToolkit.Library;
 using UnityEngine;
@@ -61,9 +64,13 @@ public sealed class PlaceResourceWindow : Window {
 			() => m_selectedProduct,
 			() => m_selectedProduct = Option<ProductProto>.None);
 
+		// Wire the live picker selection into the tool ONCE at window construction. The lambda
+		// closes over m_selectedProduct so the tool reads the current value at every fulfill
+		// click, even if the user changes the picker mid-session.
+		fulfillTool.SetProductGetter(() => m_selectedProduct);
+
 		var fulfillRow = new Row(2.pt()) {
 			new ButtonIcon(Button.General, "Assets/Unity/UserInterface/Toolbar/Flatten.svg", () => {
-				fulfillTool.SetProduct(m_selectedProduct);
 				context.InputMgr.ActivateNewController(fulfillTool);
 			})
 			.Medium()
@@ -88,18 +95,33 @@ public sealed class PlaceResourceWindow : Window {
 	}
 
 	[GlobalDependency(RegistrationMode.AsEverything, false, false)]
-	public sealed class Controller : WindowController<PlaceResourceWindow> {
+	public sealed class Controller : WindowController<PlaceResourceWindow>, IToolbarItemController {
 
 		private readonly KeyBindings m_binding =
 			KeyBindings.FromKey(KbCategory.Tools, ShortcutMode.Game, KeyCode.F9);
 
+		// IToolbarItemController members. Always visible (no gating logic), no-op event.
+		public bool IsVisible => true;
+		public bool DeactivateShortcutsIfNotVisible => false;
+		public event Action<IToolbarItemController> VisibilityChanged { add { } remove { } }
+
 		// LayersPanel config (Group=AlwaysActive) so activating a Tool-config controller from a
 		// panel button doesn't close us. Tool's GroupToCloseOnActivation includes Window/Inspector
-		// but not AlwaysActive — same trick the game's Layers panel uses. Window still closes on
+		// but not AlwaysActive, same trick the game's Layers panel uses. Window still closes on
 		// F9 toggle, on the X button, and on Esc (LayersPanel.IgnoreEscapeKey is false).
-		public Controller(ControllerContext ctx) : base(ctx, ControllerConfig.LayersPanel) {
+		public Controller(ControllerContext ctx, ToolbarHud toolbar) : base(ctx, ControllerConfig.LayersPanel) {
 			ctx.InputManager.RegisterGlobalShortcut(_ => m_binding, this);
-			Log.Info("PlaceResourceWindow.Controller: registered F9 toggle");
+			// Tool-section button. Order 1080f puts us right after Upgrade (1070f) in the same
+			// bin (10) as the other tool buttons (Sweep, Demolish, Cut, Copy, Clone, Unity, Pause,
+			// Upgrade at 1000-1070f). Lambda closes over our local binding so the tooltip displays
+			// "F9" without needing a registered ShortcutsManager entry.
+			toolbar.AddToolButton(
+				"Place / Fulfill".AsLoc(),
+				this,
+				"Assets/PlaceResourceMod/Toolbar.png",
+				1080f,
+				_ => m_binding);
+			Log.Info("PlaceResourceWindow.Controller: registered F9 toggle and toolbar button");
 		}
 	}
 }

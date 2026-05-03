@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  README/docs version of toolbar-icon.svg with a rounded dark background frame so the
+  white-on-transparent icon is visible on both light and dark GitHub themes. The frame
+  also approximates how the icon appears on COI's toolbar.
+
+  The production icon (toolbar-icon.svg) stays transparent, the game's UI provides
+  the background.
+-->
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120">
+  <!-- Background frame -->
+  <rect x="0" y="0" width="120" height="120" rx="14" ry="14" fill="#2a2a30" />
+
+  <!-- Inverted triangle, filled (offset by +10,+10 to fit padded frame) -->
+  <polygon points="45,18 75,18 60,42" fill="#ffffff" />
+
+  <!-- Single wave cycle: rises to peak, returns, dips to trough, returns. -->
+  <path d="M 15,78 Q 37,50 60,78 Q 83,106 105,78"
+        fill="none"
+        stroke="#ffffff"
+        stroke-width="7"
+        stroke-linecap="round"
+        stroke-linejoin="round" />
+</svg>
