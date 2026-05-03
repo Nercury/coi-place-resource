@@ -3,6 +3,11 @@
 All notable changes to PlaceResourceMod are documented here.
 This project follows [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [0.3.1] - 2026-05-03
+
+### Added
+- `min_game_version: 0.8.3` in manifest, so the mod won't load on older COI versions.
+
 ## [0.3.0] - 2026-05-03
 
 ### Added
