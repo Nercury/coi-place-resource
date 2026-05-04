@@ -9,6 +9,8 @@ using Mafi.Unity;
 using Mafi.Unity.InputControl;
 using Mafi.Unity.InputControl.AreaTool;
 using Mafi.Unity.Terrain;
+using Mafi.Unity.Terrain.Designation;
+using Mafi.Unity.Utils;
 using UnityEngine;
 using UnityEngine.EventSystems;
 
@@ -39,6 +41,10 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 	private readonly IUnityInputMgr m_inputManager;
 	private readonly IInputScheduler m_inputScheduler;
 	private readonly AreaSelectionTool m_areaSelectionTool;
+	// Activator for the designation overlay (combined with terrain grid lines), so existing
+	// dumping/leveling/mining designations are visible while the user picks an area to fulfill.
+	// Same pattern the sandbox FulfillDesignationsInputController uses.
+	private readonly IActivator m_designationsActivator;
 
 	// Live getter back to the picker UI. Read at fulfill-time so the user can change material
 	// in the panel while the tool is active and the next click uses the new selection.
@@ -54,7 +60,8 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 		IUnityInputMgr inputManager,
 		IInputScheduler inputScheduler,
 		AreaSelectionToolFactory areaSelectionToolFactory,
-		NewInstanceOf<TerrainAreaOutlineRenderer> terrainOutlineRenderer)
+		NewInstanceOf<TerrainAreaOutlineRenderer> terrainOutlineRenderer,
+		TerrainDesignationsRenderer designationsRenderer)
 	{
 		m_inputManager = inputManager;
 		m_inputScheduler = inputScheduler;
@@ -65,6 +72,7 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 			onSelfDeactivated: onAreaToolDeactivated,
 			onEmptyRightClick: onEmptyRightClick);
 		m_areaSelectionTool.SetLeftClickColor(ColorRgba.Green);
+		m_designationsActivator = designationsRenderer.CreateActivatorCombinedWithTerrainGrid();
 	}
 
 	/// <summary>
@@ -79,6 +87,9 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 	public void Activate() {
 		m_isActive = true;
 		m_areaSelectionTool.TerrainCursor.Activate();
+		// Make existing designations visible while picking an area, so the user sees what will
+		// be hit. Activator is no-op if already active (e.g. user opened the Layers panel first).
+		m_designationsActivator.ActivateIfNotActive();
 
 		m_panelGo = new GameObject("PlaceResourceMod.FulfillPanel");
 		m_panel = m_panelGo.AddComponent<InfoPanelMb>();
@@ -99,6 +110,7 @@ public sealed class FulfillDesignationsTool : IUnityInputController {
 		if (m_isActive) {
 			m_areaSelectionTool.TerrainCursor.Deactivate();
 			m_areaSelectionTool.Deactivate();
+			m_designationsActivator.DeactivateIfActive();
 		}
 		m_isActive = false;
 	}

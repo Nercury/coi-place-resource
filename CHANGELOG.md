@@ -1,3 +1,6 @@
+v0.4.2 | 2026-05-04
+* Fulfill tool automatically shows existing dumping/leveling/mining designations while in area-select mode, no need to toggle the layer overlay manually.
+
 v0.4.1 | 2026-05-04
 * Description fix: removed incorrect "top toolbar" wording.
 
