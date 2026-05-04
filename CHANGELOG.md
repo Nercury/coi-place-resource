@@ -1,3 +1,6 @@
+v0.4.3 | 2026-05-04
+* Shortened the manifest short description to match what's shown on the mod portal.
+
 v0.4.2 | 2026-05-04
 * Fulfill tool automatically shows existing dumping/leveling/mining designations while in area-select mode, no need to toggle the layer overlay manually.
 

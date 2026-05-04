@@ -7,7 +7,7 @@
 		<LangVersion>latest</LangVersion>
 
 		<!-- Bump these in lockstep with manifest.json's "version" field. -->
-		<Version>0.4.2</Version>
+		<Version>0.4.3</Version>
 		<AssemblyTitle>Place Virtual Resource</AssemblyTitle>
 		<Product>Place Virtual Resource</Product>
 		<Company>Everyone</Company>
