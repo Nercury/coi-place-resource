@@ -51,6 +51,7 @@ public sealed class PlaceResourceTool : IUnityInputController {
 	private int m_resourceIndex;
 	private int m_quantity = DEFAULT_QUANTITY;
 	private int m_radius = DEFAULT_RADIUS;
+	private bool m_overlapAtCursor;
 
 	private GameObject m_previewGo;
 	private PreviewCircleMb m_previewCircle;
@@ -116,6 +117,7 @@ public sealed class PlaceResourceTool : IUnityInputController {
 	public void Activate() {
 		if (m_resources.Length == 0) return;
 		m_isActive = true;
+		m_overlapAtCursor = false;
 		m_terrainCursor.Activate();
 
 		m_previewGo = new GameObject("PlaceResourceMod.Preview");
@@ -181,11 +183,22 @@ public sealed class PlaceResourceTool : IUnityInputController {
 			}
 		}
 
-		// Left-click → place.
+		// Overlapping same-product deposits are not supported by the game (WellPump binds a single
+		// deposit per tile), so placement over one is refused — preview turns red as feedback.
+		bool overlapAtCursor = m_terrainCursor.HasValue && m_resources.Length > 0
+			&& m_service.OverlapsExisting(m_resources[m_resourceIndex], m_terrainCursor.Tile2i, new RelTile1i(m_radius));
+		if (overlapAtCursor != m_overlapAtCursor) {
+			m_overlapAtCursor = overlapAtCursor;
+			updateVisualState();
+		}
+
+		// Left-click → place (no-op while overlapping an existing deposit).
 		if (Input.GetMouseButtonDown(0) && !overUi && m_terrainCursor.HasValue) {
+			if (m_overlapAtCursor) return true;
 			var product = m_resources[m_resourceIndex];
-			m_service.PlaceAt(product, m_terrainCursor.Tile2i, new Quantity(m_quantity), new RelTile1i(m_radius));
-			ensureLayersShowingPlacedResource(product);
+			if (m_service.PlaceAt(product, m_terrainCursor.Tile2i, new Quantity(m_quantity), new RelTile1i(m_radius))) {
+				ensureLayersShowingPlacedResource(product);
+			}
 			return true;
 		}
 
@@ -203,13 +216,23 @@ public sealed class PlaceResourceTool : IUnityInputController {
 		var product = m_resources[m_resourceIndex];
 		if (m_previewCircle != null) {
 			m_previewCircle.SetRadius(m_radius);
-			m_previewCircle.SetColor(product.Graphics.ResourcesVizColor.ToColor());
+			m_previewCircle.SetColor(m_overlapAtCursor
+				? UnityEngine.Color.red
+				: product.Graphics.ResourcesVizColor.ToColor());
 		}
 		if (m_infoPanel != null) {
-			m_infoPanel.SetLines(
-				product.Strings.Name.TranslatedString,
-				$"{m_quantity:N0} units",
-				$"radius {m_radius} tiles");
+			if (m_overlapAtCursor) {
+				m_infoPanel.SetLines(
+					product.Strings.Name.TranslatedString,
+					$"{m_quantity:N0} units",
+					$"radius {m_radius} tiles",
+					"overlaps existing deposit, cannot place");
+			} else {
+				m_infoPanel.SetLines(
+					product.Strings.Name.TranslatedString,
+					$"{m_quantity:N0} units",
+					$"radius {m_radius} tiles");
+			}
 		}
 	}
 

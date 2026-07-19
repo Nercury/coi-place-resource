@@ -37,7 +37,37 @@ public sealed class PlaceResourceService {
 			?? throw new MissingFieldException("VirtualResourceManager.m_virtualResourcesMap not found — game version mismatch?");
 	}
 
-	public void PlaceAt(VirtualResourceProductProto product, Tile2i pos, Quantity quantity, RelTile1i radius) {
+	/// <summary>
+	/// True when a deposit of <paramref name="product"/> with the given footprint would overlap an
+	/// existing deposit of the same product. The game does not support overlapping deposits: a
+	/// WellPump binds to exactly one deposit per tile and raises "Multiple virtual resources not
+	/// supported!" when it finds more, and other mods patch deposit behavior assuming the same
+	/// (Cheat++ disables its water/oil cheats entirely when we are loaded because of this).
+	/// </summary>
+	public bool OverlapsExisting(VirtualResourceProductProto product, Tile2i pos, RelTile1i radius) {
+		var arr = (ImmutableArray<IVirtualTerrainResource>)m_resourcesField.GetValue(m_manager);
+		foreach (var r in arr) {
+			if (r.Product != product) continue;
+			if (r is SimpleVirtualResource simple) {
+				// Two circular footprints intersect iff center distance <= sum of radii.
+				long reach = (long)radius.Value + simple.MaxRadius.Value;
+				if (pos.DistanceSqrTo(simple.Position.Tile2i) <= reach * reach) return true;
+			} else if (r.IsAt(pos)) {
+				// Unknown IVirtualTerrainResource implementation — its footprint isn't readable,
+				// so only the center tile can be checked.
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/// <summary>Places a new deposit. Returns false (placing nothing) on overlap — see OverlapsExisting.</summary>
+	public bool PlaceAt(VirtualResourceProductProto product, Tile2i pos, Quantity quantity, RelTile1i radius) {
+		if (OverlapsExisting(product, pos, radius)) {
+			Log.Info($"PlaceResourceService: refused {product.Id} at {pos} radius {radius} — overlaps an existing deposit");
+			return false;
+		}
+
 		var resource = new SimpleVirtualResource(product, quantity, new Tile3i(pos.X, pos.Y, 0), radius);
 
 		// Append to flat array. Both fields are serialized independently and not auto-rebuilt
@@ -51,5 +81,6 @@ public sealed class PlaceResourceService {
 		map[product] = existing.Add(resource);
 
 		Log.Info($"PlaceResourceService: placed {quantity} of {product.Id} at {pos} radius {radius}");
+		return true;
 	}
 }
