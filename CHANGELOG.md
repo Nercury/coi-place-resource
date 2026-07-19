@@ -1,3 +1,8 @@
+v0.4.4 | 2026-07-20
+* Updated for Captain of Industry v0.8.6 (Update 4.2): asset bundle repacked with Unity 6000.3.19f1 to match the game's upgraded rendering engine.
+* min_game_version raised to 0.8.6, older game versions cannot load the new asset bundle format. Use mod v0.4.3 on game v0.8.3-0.8.5.
+* Tool no longer allows placing overlapping resources; other mods or the game should no longer crash because of resource overlap. The preview circle turns red over an existing deposit and the click does nothing.
+
 v0.4.3 | 2026-05-04
 * Shortened the manifest short description to match what's shown on the mod portal.
 
