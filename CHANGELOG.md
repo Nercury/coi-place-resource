@@ -1,3 +1,8 @@
+v0.4.5 | 2026-11-07
+* Updated for Captain of Industry v0.8.8 (Update 4.3): fixed the crash on game start ("Could not resolve type ... KbCategory") caused by the game's new key-binding system.
+* The F9 shortcut is now a registered key-binding action, so it shows up in the game's key-binding settings and can be rebound.
+* min_game_version raised to 0.8.8. Use mod v0.4.4 on game v0.8.6-0.8.7.
+
 v0.4.4 | 2026-07-19
 * Updated for Captain of Industry v0.8.6 (Update 4.2): asset bundle repacked with Unity 6000.3.19f1 to match the game's upgraded rendering engine.
 * min_game_version raised to 0.8.6, older game versions cannot load the new asset bundle format. Use mod v0.4.3 on game v0.8.3-0.8.5.

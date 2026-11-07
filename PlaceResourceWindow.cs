@@ -31,6 +31,18 @@ namespace PlaceResourceMod;
 /// </summary>
 public sealed class PlaceResourceWindow : Window {
 
+	/// <summary>
+	/// F9 toggle action. Since COI 0.8.8 key bindings are registered actions (KbHandle) that show
+	/// up in the game's key-binding settings and can be rebound; the id must be prefixed with the
+	/// mod id. Registered per game in Controller's constructor.
+	/// </summary>
+	public static readonly KbHandle ToggleShortcut =
+		KbHandleBuilder.Start("PlaceResourceMod.TogglePanel", "Place / Fulfill panel")
+			.SetPrimary(KeyCode.F9)
+			.SetMode(ShortcutMode.Game)
+			.SetTooltip("Opens the Place Virtual Resource / Fulfill designations picker panel.")
+			.Build();
+
 	private Option<ProductProto> m_selectedProduct = Option<ProductProto>.None;
 
 	public PlaceResourceWindow(
@@ -39,7 +51,7 @@ public sealed class PlaceResourceWindow : Window {
 		FulfillDesignationsTool fulfillTool)
 		: base("Place / Fulfill".AsLoc())
 	{
-		ShortcutToShow(KeyBindings.FromKey(KbCategory.Tools, ShortcutMode.Game, KeyCode.F9));
+		ShortcutToShow(ToggleShortcut);
 		WindowSize(384.px(), Px.Auto).MakeMovable().EnablePinning();
 
 		// Section 1: virtual resources (oil, groundwater, ...). One button per resource showing
@@ -97,9 +109,6 @@ public sealed class PlaceResourceWindow : Window {
 	[GlobalDependency(RegistrationMode.AsEverything, false, false)]
 	public sealed class Controller : WindowController<PlaceResourceWindow>, IToolbarItemController {
 
-		private readonly KeyBindings m_binding =
-			KeyBindings.FromKey(KbCategory.Tools, ShortcutMode.Game, KeyCode.F9);
-
 		// IToolbarItemController members. Always visible (no gating logic), no-op event.
 		public bool IsVisible => true;
 		public bool DeactivateShortcutsIfNotVisible => false;
@@ -109,18 +118,20 @@ public sealed class PlaceResourceWindow : Window {
 		// panel button doesn't close us. Tool's GroupToCloseOnActivation includes Window/Inspector
 		// but not AlwaysActive, same trick the game's Layers panel uses. Window still closes on
 		// F9 toggle, on the X button, and on Esc (LayersPanel.IgnoreEscapeKey is false).
-		public Controller(ControllerContext ctx, ToolbarHud toolbar) : base(ctx, ControllerConfig.LayersPanel) {
-			ctx.InputManager.RegisterGlobalShortcut(_ => m_binding, this);
+		public Controller(ControllerContext ctx, ToolbarHud toolbar, IShortcutsRegistry shortcutsRegistry)
+			: base(ctx, ControllerConfig.LayersPanel)
+		{
+			shortcutsRegistry.Add(PlaceResourceMod.Instance, ToggleShortcut);
+			ctx.InputManager.RegisterGlobalShortcut(ToggleShortcut, this);
 			// Tool-section button. Order 1080f puts us right after Upgrade (1070f) in the same
 			// bin (10) as the other tool buttons (Sweep, Demolish, Cut, Copy, Clone, Unity, Pause,
-			// Upgrade at 1000-1070f). Lambda closes over our local binding so the tooltip displays
-			// "F9" without needing a registered ShortcutsManager entry.
+			// Upgrade at 1000-1070f). Tooltip shows the action's current (possibly rebound) key.
 			toolbar.AddToolButton(
 				"Place / Fulfill".AsLoc(),
 				this,
 				"Assets/PlaceResourceMod/Toolbar.png",
 				1080f,
-				_ => m_binding);
+				ToggleShortcut);
 			Log.Info("PlaceResourceWindow.Controller: registered F9 toggle and toolbar button");
 		}
 	}

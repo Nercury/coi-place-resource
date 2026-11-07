@@ -10,7 +10,15 @@ namespace PlaceResourceMod;
 /// </summary>
 public sealed class PlaceResourceMod : DataOnlyMod {
 
+	/// <summary>
+	/// The live mod instance, needed as the owner when registering key-binding actions with
+	/// IShortcutsRegistry (DataOnlyMod.Initialize is not overridable, so registration happens in
+	/// PlaceResourceWindow.Controller's constructor instead).
+	/// </summary>
+	public static PlaceResourceMod Instance { get; private set; }
+
 	public PlaceResourceMod(ModManifest manifest) : base(manifest) {
+		Instance = this;
 		Log.Info("PlaceResourceMod: constructed");
 	}
 
